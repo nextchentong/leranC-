@@ -6,7 +6,7 @@ using System.Text.Json;
 using System.Timers;
 public class User
 {
-    public string id { get; set; }
+    public int id { get; set; }
     public string password { get; set; }
     public string name { get; set; }
     public string text { get; set; }
@@ -168,12 +168,12 @@ partial class Program
             {
                 case "/query":
                     // 查询
-                    sql = "select * from user;";
+                    sql = $"select * from user  where id = '{newData.id}';";
 
                     break;
                 case "/add":
                     // 新增
-                    sql = $"insert into user(name, id,password) values('{newData.name}','{newData.id}','{newData.password}')";
+                    sql = $"insert into user(name,password) values('{newData.name}','{newData.password}')";
                     break;
                 case "/update":
                     // 更新
@@ -197,6 +197,8 @@ partial class Program
             MySqlCommand cmd = new MySqlCommand(sql, conn);
 
             int result = -1;
+            var result2 = new User();
+
             switch (requestUrl)
             {
                 case "/query":
@@ -209,10 +211,15 @@ partial class Program
                         //Console.WriteLine(reader[0].ToString()+reader[1].ToString()+reader[2].ToString();
                         //Console.WriteLine(reader.GetInt32(0)+reader.GetString(1)+reader.GetString(2));
                         Console.WriteLine(reader.GetString("name") + reader.GetString("id") + reader.GetString("password"));
-                        return (reader.GetString("name") + reader.GetString("id") + reader.GetString("password"));
+                        result2.name = reader.GetString("name");
+                        result2.id = reader.GetInt16("id");
+                        result2.password = reader.GetString("password");
+                        result2.text = "操作成功";
                     }
+               
 
-                    break;
+
+                    return JsonSerializer.Serialize(result2);
                 case "/add":
                     // 新增
                     result = cmd.ExecuteNonQuery();//3.执行插入、删除、更改语句。执行成功返回受影响的数据的行数，返回1可做true判断。执行失败不返回任何数据，报错，下面代码都不执行
@@ -230,7 +237,6 @@ partial class Program
                 default: break;
             }
             Console.WriteLine(result);
-            var result2 = new User();
             if (result != -1)
             {
                 result2.text = "操作成功";
