@@ -1,6 +1,17 @@
 ﻿using MySql.Data.MySqlClient;
+using System;
 using System.Net;
 using System.Text;
+using System.Text.Json;
+using System.Timers;
+public class User
+{
+    public string id { get; set; }
+    public string password { get; set; }
+    public string name { get; set; }
+    public string text { get; set; }
+
+}
 
 partial class Program
 {
@@ -34,7 +45,13 @@ partial class Program
         var context = httpobj.EndGetContext(ar);
         var request = context.Request;
         var response = context.Response;
+        var requestUrl = request.RawUrl;
+
         Console.WriteLine(request.Url);
+        Console.WriteLine(request.IsLocal);
+        Console.WriteLine(request.InputStream);
+
+        Console.WriteLine(request.HttpMethod);
         Console.WriteLine(request.RawUrl);
         Console.WriteLine(request.QueryString);
         Console.WriteLine(request.HasEntityBody);
@@ -45,15 +62,12 @@ partial class Program
         context.Response.AddHeader("Content-type", "text/plain");//添加响应头信息
         context.Response.ContentEncoding = Encoding.UTF8;
         string returnObj = null;//定义返回客户端的信息
-        if (request.HttpMethod == "POST" && request.InputStream != null)
-        {
-            //处理客户端发送的请求并返回处理信息
-            returnObj = HandleRequest(request, response);
-        }
-        else
-        {
-            returnObj = $"不是post请求或者传过来的数据为空";
-        }
+
+
+        //处理客户端发送的请求并返回处理信息
+        returnObj = HandleRequest(request, response, requestUrl);
+
+
         var returnByteArr = Encoding.UTF8.GetBytes(returnObj);//设置客户端返回信息的编码
         try
         {
@@ -71,8 +85,38 @@ partial class Program
         Console.ForegroundColor = ConsoleColor.Yellow;
         Console.WriteLine($"请求处理完成：{guid},时间：{DateTime.Now.ToString()}\r\n");
     }
+    // 定时器
+    private static void test(object source, ElapsedEventArgs e)
+    {
 
-    private static string HandleRequest(HttpListenerRequest request, HttpListenerResponse response)
+        Console.WriteLine("OK, test event is fired at: " + DateTime.Now.ToString());
+
+    }
+    // 定时任务
+    private static void test2(object source, ElapsedEventArgs e)
+    {
+
+        if (DateTime.Now.Hour == 14 && DateTime.Now.Minute == 14)  //如果当前时间是10点30分
+            Console.WriteLine("OK, event fired at: " + DateTime.Now.ToString());
+
+    }
+    // 多线程1
+    private static void DownLoadFile()
+    {
+        Console.WriteLine($"开始下载,线程ID:{Thread.CurrentThread.ManagedThreadId}");
+        Thread.Sleep(500);
+        Console.WriteLine("下载完成!");
+    }
+    // 多线程2
+    public static void TestThreadPool(object state)
+    {
+        string[] arry = state as string[];//传过来的参数值
+        int workerThreads = 0;
+        int CompletionPortThreads = 0;
+        ThreadPool.GetMaxThreads(out workerThreads, out CompletionPortThreads);
+        Console.WriteLine(DateTime.Now.ToString() + "---" + arry[0] + "--workerThreads=" + workerThreads + "--CompletionPortThreads" + CompletionPortThreads);
+    }
+    private static string HandleRequest(HttpListenerRequest request, HttpListenerResponse response, string requestUrl)
     {
         string data = null;
         try
@@ -90,6 +134,7 @@ partial class Program
             } while (readLen != 0);
             data = Encoding.UTF8.GetString(byteList.ToArray(), 0, len);
 
+
             //获取得到数据data可以进行其他操作
         }
         catch (Exception ex)
@@ -104,6 +149,12 @@ partial class Program
         response.StatusCode = 200;// 获取或设置返回给客户端的 HTTP 状态代码。
         Console.ForegroundColor = ConsoleColor.Green;
         Console.WriteLine($"接收数据完成:{data.Trim()},时间：{DateTime.Now.ToString()}");
+        Console.WriteLine($"typeof:{data.Trim().GetType()},时间：{DateTime.Now.ToString()}");
+
+        var newData = JsonSerializer.Deserialize<User>(data.Trim());
+        Console.WriteLine(newData);
+
+
         String connetStr = "server=127.0.0.1;port=3306;user=root;password=123456; database=test;";
         MySqlConnection conn = new MySqlConnection(connetStr);
 
@@ -111,32 +162,84 @@ partial class Program
         {
             conn.Open();//打开通道，建立连接，可能出现异常，使用try catch语句
             Console.WriteLine("已建立连接");
-            //在这里使用代码对数据库进行增删查改
-            // 查询
-            string sql = "select * from user;";
+            string sql = "";
 
-            // 新增
-            // string sql = "insert into user(name, id,password) values('啊宽','123','陈通22222')";
-
-            // 删除
-            // string sql = "delete from user where id = '123';";
-
-            // 更新
-            // string sql = "update user set name = '修改后',password = '修改后密码' where id = '2';";
-            MySqlCommand cmd = new MySqlCommand(sql, conn);
-            MySqlDataReader? reader = null;
-
-            reader = cmd.ExecuteReader();
-
-            // int result = cmd.ExecuteNonQuery();//3.执行插入、删除、更改语句。执行成功返回受影响的数据的行数，返回1可做true判断。执行失败不返回任何数据，报错，下面代码都不执行
-            // Console.WriteLine(result);
-            while (reader.Read())
+            switch (requestUrl)
             {
-                //Console.WriteLine(reader[0].ToString()+reader[1].ToString()+reader[2].ToString();
-                //Console.WriteLine(reader.GetInt32(0)+reader.GetString(1)+reader.GetString(2));
-                Console.WriteLine(reader.GetString("name") + reader.GetString("id") + reader.GetString("password"));
-                return (reader.GetString("name") + reader.GetString("id") + reader.GetString("password"));
+                case "/query":
+                    // 查询
+                    sql = "select * from user;";
+
+                    break;
+                case "/add":
+                    // 新增
+                    sql = $"insert into user(name, id,password) values('{newData.name}','{newData.id}','{newData.password}')";
+                    break;
+                case "/update":
+                    // 更新
+                    sql = $"update user set name = '{newData.name}',password = '{newData.password}' where id = '{newData.id}';";
+                    break;
+                case "/delete":
+                    // 删除
+                    sql = $"delete from user where id = '{newData.id}';";
+                    break;
+                default: break;
             }
+            //在这里使用代码对数据库进行增删查改
+
+
+
+
+
+
+
+
+            MySqlCommand cmd = new MySqlCommand(sql, conn);
+
+            int result = -1;
+            switch (requestUrl)
+            {
+                case "/query":
+                    MySqlDataReader? reader = null;
+
+                    reader = cmd.ExecuteReader();
+
+                    while (reader.Read())
+                    {
+                        //Console.WriteLine(reader[0].ToString()+reader[1].ToString()+reader[2].ToString();
+                        //Console.WriteLine(reader.GetInt32(0)+reader.GetString(1)+reader.GetString(2));
+                        Console.WriteLine(reader.GetString("name") + reader.GetString("id") + reader.GetString("password"));
+                        return (reader.GetString("name") + reader.GetString("id") + reader.GetString("password"));
+                    }
+
+                    break;
+                case "/add":
+                    // 新增
+                    result = cmd.ExecuteNonQuery();//3.执行插入、删除、更改语句。执行成功返回受影响的数据的行数，返回1可做true判断。执行失败不返回任何数据，报错，下面代码都不执行
+
+                    break;
+                case "/update":
+                    // 更新
+                    result = cmd.ExecuteNonQuery();//3.执行插入、删除、更改语句。执行成功返回受影响的数据的行数，返回1可做true判断。执行失败不返回任何数据，报错，下面代码都不执行
+                    break;
+                case "/delete":
+                    // 删除
+                    result = cmd.ExecuteNonQuery();//3.执行插入、删除、更改语句。执行成功返回受影响的数据的行数，返回1可做true判断。执行失败不返回任何数据，报错，下面代码都不执行
+
+                    break;
+                default: break;
+            }
+            Console.WriteLine(result);
+            var result2 = new User();
+            if (result != -1)
+            {
+                result2.text = "操作成功";
+            }
+            else
+                result2.text = "操作失败";
+            {
+            }
+            return JsonSerializer.Serialize(result2);
 
 
 
@@ -152,9 +255,41 @@ partial class Program
         }
         finally
         {
+            System.Timers.Timer timer = new System.Timers.Timer();
+            timer.Enabled = true;
+            timer.Interval = 2000; //执行间隔时间,单位为毫秒; 这里实际间隔为10分钟  
+            timer.Start();
+            timer.Elapsed += new System.Timers.ElapsedEventHandler(test2);
+            // Thread类开启线程
+
+            Thread t = new Thread(() =>
+            {
+                Console.WriteLine("开始下载" + Thread.CurrentThread.ManagedThreadId);
+                Thread.Sleep(2000);
+                Console.WriteLine("下载完成");
+            });
+            t.Start();
+            //线程睡眠
+            t.Join(1000);
+            //挂起线程 已弃用
+            // t.Suspend();
+            //继续执行线程 已弃用
+            // t.Resume();
+            //结束线程 已弃用
+            /// t.Abort();
+
+            // Task开启线程
+            Task task = new Task(DownLoadFile);
+            task.Start();
+            // 通过线程池开启线程
+            ThreadPool.QueueUserWorkItem(new WaitCallback(TestThreadPool), new string[] { "test" });
+
+            //Console.ReadKey();
             conn.Close();
         }
 
-        return $"接收数据完成";
+
+        return $"{data:'接收数据完成'}";
     }
+
 }
