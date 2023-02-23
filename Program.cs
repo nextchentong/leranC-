@@ -45,7 +45,7 @@ partial class Program
         var context = httpobj.EndGetContext(ar);
         var request = context.Request;
         var response = context.Response;
-        var requestUrl = request.RawUrl;
+        var requestUrl = request.RawUrl.Replace("/api","");
 
         Console.WriteLine(request.Url);
         Console.WriteLine(request.IsLocal);
@@ -55,7 +55,8 @@ partial class Program
         Console.WriteLine(request.RawUrl);
         Console.WriteLine(request.QueryString);
         Console.WriteLine(request.HasEntityBody);
-        //context.Response.AppendHeader("Access-Control-Allow-Origin", "*");//后台跨域请求，通常设置为配置文件
+        Console.WriteLine($"requestUrl:{requestUrl}");
+        context.Response.AppendHeader("Access-Control-Allow-Origin", "*");//后台跨域请求，通常设置为配置文件
         //context.Response.AppendHeader("Access-Control-Allow-Headers", "ID,PW");//后台跨域参数设置，通常设置为配置文件
         //context.Response.AppendHeader("Access-Control-Allow-Method", "post");//后台跨域请求设置，通常设置为配置文件
         context.Response.ContentType = "text/plain;charset=UTF-8";//告诉客户端返回的ContentType类型为纯文本格式，编码为UTF-8
@@ -125,6 +126,7 @@ partial class Program
             var byteArr = new byte[2048];
             int readLen = 0;
             int len = 0;
+            Console.WriteLine(request.InputStream);
             //接收客户端传过来的数据并转成字符串类型
             do
             {
@@ -171,6 +173,11 @@ partial class Program
                     sql = $"select * from user  where id = '{newData.id}';";
 
                     break;
+                case "/queryAll":
+                    // 查询
+                    sql = $"select * from user;";
+
+                    break;
                 case "/add":
                     // 新增
                     sql = $"insert into user(name,password) values('{newData.name}','{newData.password}')";
@@ -198,11 +205,12 @@ partial class Program
 
             int result = -1;
             var result2 = new User();
+            var userList = new List<User>();
+            MySqlDataReader? reader = null;
 
             switch (requestUrl)
             {
                 case "/query":
-                    MySqlDataReader? reader = null;
 
                     reader = cmd.ExecuteReader();
 
@@ -220,6 +228,27 @@ partial class Program
 
 
                     return JsonSerializer.Serialize(result2);
+                case "/queryAll":
+                       Console.WriteLine("机那里了");
+                    reader = cmd.ExecuteReader();
+
+                    while (reader.Read())
+                    {
+                        //Console.WriteLine(reader[0].ToString()+reader[1].ToString()+reader[2].ToString();
+                        //Console.WriteLine(reader.GetInt32(0)+reader.GetString(1)+reader.GetString(2));
+                        Console.WriteLine(reader.GetString("name") + reader.GetString("id") + reader.GetString("password"));
+                        result2.name = reader.GetString("name");
+                        result2.id = reader.GetInt16("id");
+                        result2.password = reader.GetString("password");
+                        result2.text = "操作成功";
+                        userList.Add(result2);
+                        result2= new User();
+                        
+                    }
+
+                    Console.WriteLine(userList);
+                    result = 1;
+                    return JsonSerializer.Serialize(userList);
                 case "/add":
                     // 新增
                     result = cmd.ExecuteNonQuery();//3.执行插入、删除、更改语句。执行成功返回受影响的数据的行数，返回1可做true判断。执行失败不返回任何数据，报错，下面代码都不执行
