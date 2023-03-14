@@ -1,14 +1,23 @@
-﻿using MySql.Data.MySqlClient;
+﻿using JWT.Algorithms;
+using JWT.Serializers;
+using JWT;
+using MySql.Data.MySqlClient;
 using System;
 using System.Net;
 using System.Text;
 using System.Text.Json;
 using System.Timers;
+using JWT.Builder;
+using System.Security.Cryptography;
+using Org.BouncyCastle.Crypto;
+using System.Security.AccessControl;
+using Org.BouncyCastle.Asn1.Ocsp;
+
 public class User
 {
     public int id { get; set; }
     public string password { get; set; }
-    public string name { get; set; }
+    public string userName { get; set; }
     public string text { get; set; }
 
 }
@@ -45,7 +54,7 @@ partial class Program
         var context = httpobj.EndGetContext(ar);
         var request = context.Request;
         var response = context.Response;
-        var requestUrl = request.RawUrl.Replace("/api","");
+        var requestUrl = request.RawUrl.Replace("/api", "");
 
         Console.WriteLine(request.Url);
         Console.WriteLine(request.IsLocal);
@@ -64,9 +73,10 @@ partial class Program
         context.Response.ContentEncoding = Encoding.UTF8;
         string returnObj = null;//定义返回客户端的信息
 
-
+       
         //处理客户端发送的请求并返回处理信息
-        returnObj = HandleRequest(request, response, requestUrl);
+            returnObj = HandleRequest(request, response, requestUrl);
+
 
 
         var returnByteArr = Encoding.UTF8.GetBytes(returnObj);//设置客户端返回信息的编码
@@ -117,6 +127,110 @@ partial class Program
         ThreadPool.GetMaxThreads(out workerThreads, out CompletionPortThreads);
         Console.WriteLine(DateTime.Now.ToString() + "---" + arry[0] + "--workerThreads=" + workerThreads + "--CompletionPortThreads" + CompletionPortThreads);
     }
+    // jwt token 
+
+    public static byte[] RSAEncrypt(byte[] DataToEncrypt, RSAParameters RSAKeyInfo, bool DoOAEPPadding)
+    {
+        try
+        {
+            byte[] encryptedData;
+            //Create a new instance of RSACryptoServiceProvider.
+            using (RSACryptoServiceProvider RSA = new RSACryptoServiceProvider())
+            {
+
+                //Import the RSA Key information. This only needs
+                //toinclude the public key information.
+                RSA.ImportParameters(RSAKeyInfo);
+
+                //Encrypt the passed byte array and specify OAEP padding.  
+                //OAEP padding is only available on Microsoft Windows XP or
+                //later.  
+                encryptedData = RSA.Encrypt(DataToEncrypt, DoOAEPPadding);
+            }
+            return encryptedData;
+        }
+        //Catch and display a CryptographicException  
+        //to the console.
+        catch (CryptographicException e)
+        {
+            Console.WriteLine(e.Message);
+
+            return null;
+        }
+    }
+
+    public static byte[] RSADecrypt(byte[] DataToDecrypt, RSAParameters RSAKeyInfo, bool DoOAEPPadding)
+    {
+        try
+        {
+            byte[] decryptedData;
+            //Create a new instance of RSACryptoServiceProvider.
+            using (RSACryptoServiceProvider RSA = new RSACryptoServiceProvider())
+            {
+                //Import the RSA Key information. This needs
+                //to include the private key information.
+                RSA.ImportParameters(RSAKeyInfo);
+
+                //Decrypt the passed byte array and specify OAEP padding.  
+                //OAEP padding is only available on Microsoft Windows XP or
+                //later.  
+                decryptedData = RSA.Decrypt(DataToDecrypt, DoOAEPPadding);
+            }
+            return decryptedData;
+        }
+        //Catch and display a CryptographicException  
+        //to the console.
+        catch (CryptographicException e)
+        {
+            Console.WriteLine(e.ToString());
+            return null;
+        }
+    }
+    public static string  getToken(String userName, String password, Int32 id)
+    {
+        // 先根据用户名密码查询数据库中是否有这个用户
+
+        //JWT载荷数据对象
+        var payload = new Dictionary<string, object>
+    {
+         //发行人
+            { "iss","chentong"},
+            //到期时间【设置过期时间为24小时】
+            { "exp", DateTimeOffset.UtcNow.AddHours(24).ToUnixTimeSeconds() },
+            //主题
+            { "sub", "TestJWT" }, 
+            //用户
+            { "aud", "USER" }, 
+            //发布时间 
+            { "iat", DateTimeOffset.UtcNow.ToUnixTimeSeconds()}, 
+            //自定义载荷数据
+    {
+        "data", new
+        {
+            UserId = 123456,
+            UserName = "系统管理员"
+        }
+    }
+};
+        //私钥
+        var secret = "C4CCD2D2656D820062C11968C09E9175";
+
+        //HMACSHA256加密
+        IJwtAlgorithm algorithm = new HMACSHA256Algorithm();
+        //序列化和反序列
+        IJsonSerializer serializer = new JsonNetSerializer();
+        //Base64编解码
+        IBase64UrlEncoder urlEncoder = new JwtBase64UrlEncoder();
+        IJwtEncoder encoder = new JwtEncoder(algorithm, serializer, urlEncoder);
+        //编码成JWT令牌
+        var token = encoder.Encode(payload, secret);
+        Console.WriteLine(token);
+
+        return token;
+
+
+    }
+    // http
     private static string HandleRequest(HttpListenerRequest request, HttpListenerResponse response, string requestUrl)
     {
         string data = null;
@@ -157,7 +271,7 @@ partial class Program
         Console.WriteLine(newData);
 
 
-        String connetStr = "server=121.4.251.168;port=3306;user=root;password=123456; database=test;";
+        String connetStr = "server=127.0.0.1;port=3306;user=root;password=123456; database=moonlet;";
         MySqlConnection conn = new MySqlConnection(connetStr);
 
         try
@@ -180,15 +294,20 @@ partial class Program
                     break;
                 case "/add":
                     // 新增
-                    sql = $"insert into user(name,password) values('{newData.name}','{newData.password}')";
+                    sql = $"insert into user(name,password) values('{newData.userName}','{newData.password}')";
                     break;
                 case "/update":
                     // 更新
-                    sql = $"update user set name = '{newData.name}',password = '{newData.password}' where id = '{newData.id}';";
+                    sql = $"update user set name = '{newData.userName}',password = '{newData.password}' where id = '{newData.id}';";
                     break;
                 case "/delete":
                     // 删除
                     sql = $"delete from user where id = '{newData.id}';";
+                    break;
+                case "/login":
+                    // 删除
+                    sql = $"select * from user where userName = '{newData.userName}'and password = '{newData.password}';";
+                    Console.WriteLine(sql);
                     break;
                 default: break;
             }
@@ -219,17 +338,17 @@ partial class Program
                         //Console.WriteLine(reader[0].ToString()+reader[1].ToString()+reader[2].ToString();
                         //Console.WriteLine(reader.GetInt32(0)+reader.GetString(1)+reader.GetString(2));
                         Console.WriteLine(reader.GetString("name") + reader.GetString("id") + reader.GetString("password"));
-                        result2.name = reader.GetString("name");
+                        result2.userName = reader.GetString("name");
                         result2.id = reader.GetInt16("id");
                         result2.password = reader.GetString("password");
                         result2.text = "操作成功";
                     }
-               
+
 
 
                     return JsonSerializer.Serialize(result2);
                 case "/queryAll":
-                       Console.WriteLine("机那里了");
+                    Console.WriteLine("机那里了");
                     reader = cmd.ExecuteReader();
 
                     while (reader.Read())
@@ -237,13 +356,13 @@ partial class Program
                         //Console.WriteLine(reader[0].ToString()+reader[1].ToString()+reader[2].ToString();
                         //Console.WriteLine(reader.GetInt32(0)+reader.GetString(1)+reader.GetString(2));
                         Console.WriteLine(reader.GetString("name") + reader.GetString("id") + reader.GetString("password"));
-                        result2.name = reader.GetString("name");
+                        result2.userName = reader.GetString("name");
                         result2.id = reader.GetInt16("id");
                         result2.password = reader.GetString("password");
                         result2.text = "操作成功";
                         userList.Add(result2);
-                        result2= new User();
-                        
+                        result2 = new User();
+
                     }
 
                     Console.WriteLine(userList);
@@ -261,8 +380,22 @@ partial class Program
                 case "/delete":
                     // 删除
                     result = cmd.ExecuteNonQuery();//3.执行插入、删除、更改语句。执行成功返回受影响的数据的行数，返回1可做true判断。执行失败不返回任何数据，报错，下面代码都不执行
-
                     break;
+                case "/login":
+                    // 登录
+                    reader = cmd.ExecuteReader();
+
+                    while (reader.Read())
+                    {
+                        //Console.WriteLine(reader[0].ToString()+reader[1].ToString()+reader[2].ToString();
+                        //Console.WriteLine(reader.GetInt32(0)+reader.GetString(1)+reader.GetString(2));
+                        Console.WriteLine(reader.GetString("userName") + reader.GetInt16("id") + reader.GetString("password"));
+                        result2.userName = reader.GetString("userName");
+                        result2.id = reader.GetInt16("id");
+                        result2.password = reader.GetString("password");
+                        result2.text = "操作成功";
+                    }
+                    return JsonSerializer.Serialize(getToken(result2.userName,result2.password,result2.id));
                 default: break;
             }
             Console.WriteLine(result);
@@ -320,9 +453,8 @@ partial class Program
             ThreadPool.QueueUserWorkItem(new WaitCallback(TestThreadPool), new string[] { "test" });
 
             //Console.ReadKey();
-            conn.Close();
+           // conn.Close();
         }
-
 
         return $"{data:'接收数据完成'}";
     }

@@ -37,3 +37,5 @@ C:\Users\53105\source\repos\ConsoleApp2\obj\Release\net7.0\refint\HelloWorld.dll
 C:\Users\53105\source\repos\ConsoleApp2\obj\Release\net7.0\HelloWorld.pdb
 C:\Users\53105\source\repos\ConsoleApp2\obj\Release\net7.0\HelloWorld.genruntimeconfig.cache
 C:\Users\53105\source\repos\ConsoleApp2\obj\Release\net7.0\ref\HelloWorld.dll
+C:\Users\53105\source\repos\ConsoleApp2\bin\Release\net7.0\JWT.dll
+C:\Users\53105\source\repos\ConsoleApp2\bin\Release\net7.0\Newtonsoft.Json.dll
