@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "/Bjtc4MlbYViSNNNdRN6qzoSASM5WKu8n6Tj0tBCTMJeWjzVZ4O4eXirncER0Ssl47uoxbIbY3dv2axOwjIidg==",
+  "dgSpecHash": "6lSb45sZC7MMnX/Xj+mUMBhI9MBwmPbe5ckKiMPyhbtUrEkxHTvV5pKbdhXDxAZuAdS7cDojGVOZLYWmDnF4qQ==",
   "success": true,
-  "projectFilePath": "/Users/next/Desktop/leranC-/HelloWorld.csproj",
+  "projectFilePath": "/Users/next/Desktop/leranC-/sss-moonlet.csproj",
   "expectedPackageFiles": [
     "/Users/next/.nuget/packages/google.protobuf/3.21.9/google.protobuf.3.21.9.nupkg.sha512",
     "/Users/next/.nuget/packages/jwt/10.0.2/jwt.10.0.2.nupkg.sha512",

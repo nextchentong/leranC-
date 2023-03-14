@@ -1727,9 +1727,9 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/next/Desktop/leranC-/HelloWorld.csproj",
-      "projectName": "HelloWorld",
-      "projectPath": "/Users/next/Desktop/leranC-/HelloWorld.csproj",
+      "projectUniqueName": "/Users/next/Desktop/leranC-/sss-moonlet.csproj",
+      "projectName": "sss-moonlet",
+      "projectPath": "/Users/next/Desktop/leranC-/sss-moonlet.csproj",
       "packagesPath": "/Users/next/.nuget/packages/",
       "outputPath": "/Users/next/Desktop/leranC-/obj/",
       "projectStyle": "PackageReference",
