@@ -73,9 +73,9 @@ partial class Program
         context.Response.ContentEncoding = Encoding.UTF8;
         string returnObj = null;//定义返回客户端的信息
 
-       
+
         //处理客户端发送的请求并返回处理信息
-            returnObj = HandleRequest(request, response, requestUrl);
+        returnObj = HandleRequest(request, response, requestUrl);
 
 
 
@@ -186,7 +186,7 @@ partial class Program
             return null;
         }
     }
-    public static string  getToken(String userName, String password, Int32 id)
+    public static string getToken(String userName, String password, Int32 id)
     {
         // 先根据用户名密码查询数据库中是否有这个用户
 
@@ -395,7 +395,7 @@ partial class Program
                         result2.password = reader.GetString("password");
                         result2.text = "操作成功";
                     }
-                    return JsonSerializer.Serialize(getToken(result2.userName,result2.password,result2.id));
+                    return JsonSerializer.Serialize(getToken(result2.userName, result2.password, result2.id));
                 default: break;
             }
             Console.WriteLine(result);
@@ -453,7 +453,7 @@ partial class Program
             ThreadPool.QueueUserWorkItem(new WaitCallback(TestThreadPool), new string[] { "test" });
 
             //Console.ReadKey();
-           // conn.Close();
+            // conn.Close();
         }
 
         return $"{data:'接收数据完成'}";

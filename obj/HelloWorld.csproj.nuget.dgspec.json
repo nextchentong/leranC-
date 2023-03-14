@@ -1,33 +1,26 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\53105\\source\\repos\\ConsoleApp2\\HelloWorld.csproj": {}
+    "/Users/next/Desktop/leranC-/HelloWorld.csproj": {}
   },
   "projects": {
-    "C:\\Users\\53105\\source\\repos\\ConsoleApp2\\HelloWorld.csproj": {
+    "/Users/next/Desktop/leranC-/HelloWorld.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\53105\\source\\repos\\ConsoleApp2\\HelloWorld.csproj",
+        "projectUniqueName": "/Users/next/Desktop/leranC-/HelloWorld.csproj",
         "projectName": "HelloWorld",
-        "projectPath": "C:\\Users\\53105\\source\\repos\\ConsoleApp2\\HelloWorld.csproj",
-        "packagesPath": "C:\\Users\\53105\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\53105\\source\\repos\\ConsoleApp2\\obj\\",
+        "projectPath": "/Users/next/Desktop/leranC-/HelloWorld.csproj",
+        "packagesPath": "/Users/next/.nuget/packages/",
+        "outputPath": "/Users/next/Desktop/leranC-/obj/",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\53105\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "/Users/next/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net7.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "https://nuget.cdn.azure.cn/v3/index.json": {},
-          "https://www.nuget.org/": {}
+          "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net7.0": {
@@ -51,7 +44,7 @@
             },
             "MySql.Data": {
               "target": "Package",
-              "version": "[8.0.32, )"
+              "version": "[8.0.32.1, )"
             }
           },
           "imports": [
@@ -70,7 +63,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.201\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/7.0.103/RuntimeIdentifierGraph.json"
         }
       }
     }

@@ -9,7 +9,7 @@
       "HelloWorld/1.0.0": {
         "dependencies": {
           "JWT": "10.0.2",
-          "MySql.Data": "8.0.32"
+          "MySql.Data": "8.0.32.1"
         },
         "runtime": {
           "HelloWorld.dll": {}
@@ -90,7 +90,7 @@
           }
         }
       },
-      "MySql.Data/8.0.32": {
+      "MySql.Data/8.0.32.1": {
         "dependencies": {
           "Google.Protobuf": "3.21.9",
           "K4os.Compression.LZ4.Streams": "1.2.6",
@@ -105,26 +105,34 @@
         "runtime": {
           "lib/net7.0/MySql.Data.dll": {
             "assemblyVersion": "8.0.32.0",
-            "fileVersion": "8.0.32.0"
+            "fileVersion": "8.0.32.1"
+          }
+        },
+        "runtimeTargets": {
+          "runtimes/win-x64/native/comerr64.dll": {
+            "rid": "win-x64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
           },
-          "lib/net7.0/ZstdNet.dll": {
-            "assemblyVersion": "1.4.5.0",
-            "fileVersion": "1.4.5.0"
+          "runtimes/win-x64/native/gssapi64.dll": {
+            "rid": "win-x64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
           },
-          "lib/net7.0/comerr64.dll": {
-            "fileVersion": "4.1.0.0"
+          "runtimes/win-x64/native/k5sprt64.dll": {
+            "rid": "win-x64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
           },
-          "lib/net7.0/gssapi64.dll": {
-            "fileVersion": "4.1.0.0"
+          "runtimes/win-x64/native/krb5_64.dll": {
+            "rid": "win-x64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
           },
-          "lib/net7.0/k5sprt64.dll": {
-            "fileVersion": "4.1.0.0"
-          },
-          "lib/net7.0/krb5_64.dll": {
-            "fileVersion": "4.1.0.0"
-          },
-          "lib/net7.0/krbcc64.dll": {
-            "fileVersion": "4.1.0.0"
+          "runtimes/win-x64/native/krbcc64.dll": {
+            "rid": "win-x64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
           }
         }
       },
@@ -370,12 +378,12 @@
       "path": "microsoft.win32.systemevents/4.7.0",
       "hashPath": "microsoft.win32.systemevents.4.7.0.nupkg.sha512"
     },
-    "MySql.Data/8.0.32": {
+    "MySql.Data/8.0.32.1": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-SDzjcf0mVFtWfpEXJwOBYknskbN55H1WEpTzMnlKaaNrT6Mkz0/36NPdpxh7cRrW3cqbuDCFKsxM6rE0CRewhA==",
-      "path": "mysql.data/8.0.32",
-      "hashPath": "mysql.data.8.0.32.nupkg.sha512"
+      "sha512": "sha512-K5WkZz8hkiHyKSnEON5AER+oMxmwhRrSAy6/a7XnfWpytn8EyYLCFWe0lDNZqZJ/w79P1Qtw0TZvf3kP0a1fbg==",
+      "path": "mysql.data/8.0.32.1",
+      "hashPath": "mysql.data.8.0.32.1.nupkg.sha512"
     },
     "Newtonsoft.Json/13.0.2": {
       "type": "package",

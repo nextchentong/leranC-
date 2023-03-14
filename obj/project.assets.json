@@ -121,7 +121,7 @@
           }
         }
       },
-      "MySql.Data/8.0.32": {
+      "MySql.Data/8.0.32.1": {
         "type": "package",
         "dependencies": {
           "Google.Protobuf": "3.21.9",
@@ -137,24 +137,34 @@
         "compile": {
           "lib/net7.0/MySql.Data.dll": {
             "related": ".xml"
-          },
-          "lib/net7.0/ZstdNet.dll": {},
-          "lib/net7.0/comerr64.dll": {},
-          "lib/net7.0/gssapi64.dll": {},
-          "lib/net7.0/k5sprt64.dll": {},
-          "lib/net7.0/krb5_64.dll": {},
-          "lib/net7.0/krbcc64.dll": {}
+          }
         },
         "runtime": {
           "lib/net7.0/MySql.Data.dll": {
             "related": ".xml"
+          }
+        },
+        "runtimeTargets": {
+          "runtimes/win-x64/native/comerr64.dll": {
+            "assetType": "native",
+            "rid": "win-x64"
           },
-          "lib/net7.0/ZstdNet.dll": {},
-          "lib/net7.0/comerr64.dll": {},
-          "lib/net7.0/gssapi64.dll": {},
-          "lib/net7.0/k5sprt64.dll": {},
-          "lib/net7.0/krb5_64.dll": {},
-          "lib/net7.0/krbcc64.dll": {}
+          "runtimes/win-x64/native/gssapi64.dll": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/k5sprt64.dll": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/krb5_64.dll": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/krbcc64.dll": {
+            "assetType": "native",
+            "rid": "win-x64"
+          }
         }
       },
       "Newtonsoft.Json/13.0.2": {
@@ -695,63 +705,32 @@
         "version.txt"
       ]
     },
-    "MySql.Data/8.0.32": {
-      "sha512": "SDzjcf0mVFtWfpEXJwOBYknskbN55H1WEpTzMnlKaaNrT6Mkz0/36NPdpxh7cRrW3cqbuDCFKsxM6rE0CRewhA==",
+    "MySql.Data/8.0.32.1": {
+      "sha512": "K5WkZz8hkiHyKSnEON5AER+oMxmwhRrSAy6/a7XnfWpytn8EyYLCFWe0lDNZqZJ/w79P1Qtw0TZvf3kP0a1fbg==",
       "type": "package",
-      "path": "mysql.data/8.0.32",
+      "path": "mysql.data/8.0.32.1",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "lib/net452/MySql.Data.dll",
         "lib/net452/MySql.Data.xml",
-        "lib/net452/ZstdNet.dll",
-        "lib/net452/comerr64.dll",
-        "lib/net452/gssapi64.dll",
-        "lib/net452/k5sprt64.dll",
-        "lib/net452/krb5_64.dll",
-        "lib/net452/krbcc64.dll",
         "lib/net48/MySql.Data.dll",
         "lib/net48/MySql.Data.xml",
-        "lib/net48/ZstdNet.dll",
-        "lib/net48/comerr64.dll",
-        "lib/net48/gssapi64.dll",
-        "lib/net48/k5sprt64.dll",
-        "lib/net48/krb5_64.dll",
-        "lib/net48/krbcc64.dll",
         "lib/net6.0/MySql.Data.dll",
         "lib/net6.0/MySql.Data.xml",
-        "lib/net6.0/ZstdNet.dll",
-        "lib/net6.0/comerr64.dll",
-        "lib/net6.0/gssapi64.dll",
-        "lib/net6.0/k5sprt64.dll",
-        "lib/net6.0/krb5_64.dll",
-        "lib/net6.0/krbcc64.dll",
         "lib/net7.0/MySql.Data.dll",
         "lib/net7.0/MySql.Data.xml",
-        "lib/net7.0/ZstdNet.dll",
-        "lib/net7.0/comerr64.dll",
-        "lib/net7.0/gssapi64.dll",
-        "lib/net7.0/k5sprt64.dll",
-        "lib/net7.0/krb5_64.dll",
-        "lib/net7.0/krbcc64.dll",
         "lib/netstandard2.0/MySql.Data.dll",
         "lib/netstandard2.0/MySql.Data.xml",
-        "lib/netstandard2.0/ZstdNet.dll",
-        "lib/netstandard2.0/comerr64.dll",
-        "lib/netstandard2.0/gssapi64.dll",
-        "lib/netstandard2.0/k5sprt64.dll",
-        "lib/netstandard2.0/krb5_64.dll",
-        "lib/netstandard2.0/krbcc64.dll",
         "lib/netstandard2.1/MySql.Data.dll",
         "lib/netstandard2.1/MySql.Data.xml",
-        "lib/netstandard2.1/ZstdNet.dll",
-        "lib/netstandard2.1/comerr64.dll",
-        "lib/netstandard2.1/gssapi64.dll",
-        "lib/netstandard2.1/k5sprt64.dll",
-        "lib/netstandard2.1/krb5_64.dll",
-        "lib/netstandard2.1/krbcc64.dll",
-        "mysql.data.8.0.32.nupkg.sha512",
-        "mysql.data.nuspec"
+        "mysql.data.8.0.32.1.nupkg.sha512",
+        "mysql.data.nuspec",
+        "runtimes/win-x64/native/comerr64.dll",
+        "runtimes/win-x64/native/gssapi64.dll",
+        "runtimes/win-x64/native/k5sprt64.dll",
+        "runtimes/win-x64/native/krb5_64.dll",
+        "runtimes/win-x64/native/krbcc64.dll"
       ]
     },
     "Newtonsoft.Json/13.0.2": {
@@ -1739,37 +1718,29 @@
   "projectFileDependencyGroups": {
     "net7.0": [
       "JWT >= 10.0.2",
-      "MySql.Data >= 8.0.32"
+      "MySql.Data >= 8.0.32.1"
     ]
   },
   "packageFolders": {
-    "C:\\Users\\53105\\.nuget\\packages\\": {},
-    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
+    "/Users/next/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\53105\\source\\repos\\ConsoleApp2\\HelloWorld.csproj",
+      "projectUniqueName": "/Users/next/Desktop/leranC-/HelloWorld.csproj",
       "projectName": "HelloWorld",
-      "projectPath": "C:\\Users\\53105\\source\\repos\\ConsoleApp2\\HelloWorld.csproj",
-      "packagesPath": "C:\\Users\\53105\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\53105\\source\\repos\\ConsoleApp2\\obj\\",
+      "projectPath": "/Users/next/Desktop/leranC-/HelloWorld.csproj",
+      "packagesPath": "/Users/next/.nuget/packages/",
+      "outputPath": "/Users/next/Desktop/leranC-/obj/",
       "projectStyle": "PackageReference",
-      "fallbackFolders": [
-        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-      ],
       "configFilePaths": [
-        "C:\\Users\\53105\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        "/Users/next/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net7.0"
       ],
       "sources": {
-        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-        "https://nuget.cdn.azure.cn/v3/index.json": {},
-        "https://www.nuget.org/": {}
+        "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
         "net7.0": {
@@ -1793,7 +1764,7 @@
           },
           "MySql.Data": {
             "target": "Package",
-            "version": "[8.0.32, )"
+            "version": "[8.0.32.1, )"
           }
         },
         "imports": [
@@ -1812,7 +1783,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.201\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/7.0.103/RuntimeIdentifierGraph.json"
       }
     }
   }
