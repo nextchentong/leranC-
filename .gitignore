@@ -261,3 +261,7 @@ paket-files/
 
 # FAKE - F# Make
 .fake/
+
+
+# .gitignore文件只会在第一次提交项目的时候写入缓存，也就是说如果你第一次提交项目时候忘记写.gitignore文件，后来再补上是没有用的，.gitignore文件是不生效的。因为在缓存中已经标记该项目不存在ignore文件了（boolean）
+# 所以我们使用git rm -r --cached .去清除所有的缓存。然后再次提交代码就可以了，这样.gitignore文件就会生效了。
