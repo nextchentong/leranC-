@@ -8,64 +8,74 @@ using System.Text.Json;
 using System.Timers;
 using System.Security.Cryptography;
 using JWT.Exceptions;
-using static sssMoonlet.Test;
-using sssMoonlet;
-using System.Diagnostics;
-namespace sssMoonlet {
+
+namespace sssMoonlet
+{
     public class User
     {
-        public int id { get; set; }
-        public string password { get; set; }
-        public string userName { get; set; }
-        public string text { get; set; }
+        public int id;
+        public string password = "";
+        public string userName = "";
+        public string text = "";
 
     }
 
 
-    partial class Program
+    partial class index
     {
-        static HttpListener httpobj;
+        static HttpListener httpObj = new HttpListener();
         static void Main(string[] args)
         {
 
             try
             {
-                Test mytest = new Test();
-                Test2();
+
+                AppDomain currentDomain = AppDomain.CurrentDomain;
+                currentDomain.UnhandledException += new UnhandledExceptionEventHandler(MyHandler);
                 getToken("admin", "admin", 1);
                 //提供一个简单的、可通过编程方式控制的 HTTP 协议侦听器。此类不能被继承。
-                httpobj = new HttpListener();
                 //定义url及端口号，通常设置为配置文件
-                httpobj.Prefixes.Add("http://+:8080/");
+                httpObj.Prefixes.Add("http://+:8080/");
                 //启动监听器
-                httpobj.Start();
+                httpObj.Start();
                 //异步监听客户端请求，当客户端的网络请求到来时会自动执行Result委托
                 //该委托没有返回值，有一个IAsyncResult接口的参数，可通过该参数获取context对象
-                httpobj.BeginGetContext(Result, null);
+                httpObj.BeginGetContext(Result, null);
                 Console.WriteLine($"服务端初始化完毕，正在等待客户端请求,时间：{DateTime.Now.ToString()}\r\n");
                 Console.ReadKey();
+
             }
-            catch (Exception ex)
+            catch (Exception e)
+            {   // 只能捕获主线程同步代码
+                Console.WriteLine("Catch clause caught : {0} \n", e.Message);
+
+            }
+            finally
             {
-                var applicationPath = System.Reflection.Assembly.GetExecutingAssembly().Location;
-                Process.Start(applicationPath);
-                Environment.Exit(Environment.ExitCode);
+                Console.WriteLine("finally");
+                Console.ReadKey();
             }
 
         }
 
+        static void MyHandler(object sender, UnhandledExceptionEventArgs args)
+        {
+            Exception e = (Exception)args.ExceptionObject;
+            Console.WriteLine("MyHandler caught : " + e.Message);
+            Console.WriteLine("Runtime terminating: {0}", args.IsTerminating);
+        }
 
         private static void Result(IAsyncResult ar)
         {
             //当接收到请求后程序流会走到这里
 
             //继续异步监听
-            httpobj.BeginGetContext(Result, null);
+            httpObj.BeginGetContext(Result, null);
             var guid = Guid.NewGuid().ToString();
             Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine($"接到新的请求:{guid},时间：{DateTime.Now.ToString()}");
             //获得context对象
-            var context = httpobj.EndGetContext(ar);
+            var context = httpObj.EndGetContext(ar);
             var request = context.Request;
             var response = context.Response;
             var requestUrl = request.RawUrl.Replace("/api", "");
@@ -85,7 +95,7 @@ namespace sssMoonlet {
             context.Response.ContentType = "text/plain;charset=UTF-8";//告诉客户端返回的ContentType类型为纯文本格式，编码为UTF-8
             context.Response.AddHeader("Content-type", "text/plain");//添加响应头信息
             context.Response.ContentEncoding = Encoding.UTF8;
-            string returnObj = null;//定义返回客户端的信息
+            string returnObj = "";//定义返回客户端的信息
 
 
             //处理客户端发送的请求并返回处理信息
@@ -135,15 +145,15 @@ namespace sssMoonlet {
         // 多线程2
         public static void TestThreadPool(object state)
         {
-            string[] arry = state as string[];//传过来的参数值
+            string[]? array = state as string[];//传过来的参数值
             int workerThreads = 0;
             int CompletionPortThreads = 0;
             ThreadPool.GetMaxThreads(out workerThreads, out CompletionPortThreads);
-            Console.WriteLine(DateTime.Now.ToString() + "---" + arry[0] + "--workerThreads=" + workerThreads + "--CompletionPortThreads" + CompletionPortThreads);
+            Console.WriteLine(DateTime.Now.ToString() + "---" + array[0] + "--workerThreads=" + workerThreads + "--CompletionPortThreads" + CompletionPortThreads);
         }
         // jwt token 
 
-        public static byte[] RSAEncrypt(byte[] DataToEncrypt, RSAParameters RSAKeyInfo, bool DoOAEPPadding)
+        public static byte[]? RSAEncrypt(byte[] DataToEncrypt, RSAParameters RSAKeyInfo, bool DoOAEPPadding)
         {
             try
             {
@@ -173,7 +183,7 @@ namespace sssMoonlet {
             }
         }
 
-        public static byte[] RSADecrypt(byte[] DataToDecrypt, RSAParameters RSAKeyInfo, bool DoOAEPPadding)
+        public static byte[]? RSADecrypt(byte[] DataToDecrypt, RSAParameters RSAKeyInfo, bool DoOAEPPadding)
         {
             try
             {
@@ -274,49 +284,49 @@ namespace sssMoonlet {
         // http
         private static string HandleRequest(HttpListenerRequest request, HttpListenerResponse response, string requestUrl)
         {
-            string data = null;
             try
             {
-                var byteList = new List<byte>();
-                var byteArr = new byte[2048];
-                int readLen = 0;
-                int len = 0;
-                Console.WriteLine(request.InputStream);
-                //接收客户端传过来的数据并转成字符串类型
-                do
+                string? data = null;
+                try
                 {
-                    readLen = request.InputStream.Read(byteArr, 0, byteArr.Length);
-                    len += readLen;
-                    byteList.AddRange(byteArr);
-                } while (readLen != 0);
-                data = Encoding.UTF8.GetString(byteList.ToArray(), 0, len);
+                    var byteList = new List<byte>();
+                    var byteArr = new byte[2048];
+                    int readLen = 0;
+                    int len = 0;
+                    Console.WriteLine(request.InputStream);
+                    //接收客户端传过来的数据并转成字符串类型
+                    do
+                    {
+                        readLen = request.InputStream.Read(byteArr, 0, byteArr.Length);
+                        len += readLen;
+                        byteList.AddRange(byteArr);
+                    } while (readLen != 0);
+                    data = Encoding.UTF8.GetString(byteList.ToArray(), 0, len);
 
 
-                //获取得到数据data可以进行其他操作
-            }
-            catch (Exception ex)
-            {
-                response.StatusDescription = "404";
-                response.StatusCode = 404;
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"在接收数据时发生错误:{ex.ToString()}");
-                return $"在接收数据时发生错误:{ex.ToString()}";//把服务端错误信息直接返回可能会导致信息不安全，此处仅供参考
-            }
-            response.StatusDescription = "200";//获取或设置返回给客户端的 HTTP 状态代码的文本说明。
-            response.StatusCode = 200;// 获取或设置返回给客户端的 HTTP 状态代码。
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine($"接收数据完成:{data.Trim()},时间：{DateTime.Now.ToString()}");
-            Console.WriteLine($"typeof:{data.Trim().GetType()},时间：{DateTime.Now.ToString()}");
+                    //获取得到数据data可以进行其他操作
+                }
+                catch (Exception ex)
+                {
+                    response.StatusDescription = "404";
+                    response.StatusCode = 404;
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine($"在接收数据时发生错误:{ex.ToString()}");
+                    return $"在接收数据时发生错误:{ex.ToString()}";//把服务端错误信息直接返回可能会导致信息不安全，此处仅供参考
+                }
+                response.StatusDescription = "200";//获取或设置返回给客户端的 HTTP 状态代码的文本说明。
+                response.StatusCode = 200;// 获取或设置返回给客户端的 HTTP 状态代码。
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine($"接收数据完成:{data.Trim()},时间：{DateTime.Now.ToString()}");
+                Console.WriteLine($"typeof:{data.Trim().GetType()},时间：{DateTime.Now.ToString()}");
 
-            var newData = JsonSerializer.Deserialize<User>(data.Trim());
-            Console.WriteLine(newData);
+                var newData = data.Trim().Length != 0 ? JsonSerializer.Deserialize<User>(data) : null;
+                Console.WriteLine(newData);
 
 
-            String connetStr = "server=127.0.0.1;port=3306;user=root;password=123456; database=moonlet;";
-            MySqlConnection conn = new MySqlConnection(connetStr);
+                String connectStr = "server=127.0.0.1;port=3306;user=root;password=123456; database=moonlet;";
+                MySqlConnection conn = new MySqlConnection(connectStr);
 
-            try
-            {
                 conn.Open();//打开通道，建立连接，可能出现异常，使用try catch语句
                 Console.WriteLine("已建立连接");
                 string sql = "";
@@ -347,33 +357,24 @@ namespace sssMoonlet {
                         break;
                     case "/login":
                         // 删除
+                        throw new NullReferenceException("3333333333333333");
+
                         sql = $"select * from user where userName = '{newData.userName}'and password = '{newData.password}';";
                         Console.WriteLine(sql);
                         break;
                     default: break;
                 }
                 //在这里使用代码对数据库进行增删查改
-
-
-
-
-
-
-
-
                 MySqlCommand cmd = new MySqlCommand(sql, conn);
-
                 int result = -1;
-                var result2 = new User();
-                var userList = new List<User>();
+                User result2 = new User();
+                List<User> userList = new List<User>();
                 MySqlDataReader? reader = null;
 
                 switch (requestUrl)
                 {
                     case "/query":
-
                         reader = cmd.ExecuteReader();
-
                         while (reader.Read())
                         {
                             //Console.WriteLine(reader[0].ToString()+reader[1].ToString()+reader[2].ToString();
@@ -389,9 +390,7 @@ namespace sssMoonlet {
 
                         return JsonSerializer.Serialize(result2);
                     case "/queryAll":
-                        Console.WriteLine("机那里了");
                         reader = cmd.ExecuteReader();
-
                         while (reader.Read())
                         {
                             //Console.WriteLine(reader[0].ToString()+reader[1].ToString()+reader[2].ToString();
@@ -403,9 +402,7 @@ namespace sssMoonlet {
                             result2.text = "操作成功";
                             userList.Add(result2);
                             result2 = new User();
-
                         }
-
                         Console.WriteLine(userList);
                         result = 1;
                         return JsonSerializer.Serialize(userList);
@@ -425,7 +422,6 @@ namespace sssMoonlet {
                     case "/login":
                         // 登录
                         reader = cmd.ExecuteReader();
-
                         while (reader.Read())
                         {
                             //Console.WriteLine(reader[0].ToString()+reader[1].ToString()+reader[2].ToString();
@@ -437,7 +433,8 @@ namespace sssMoonlet {
                             result2.text = "操作成功";
                         }
                         return JsonSerializer.Serialize(getToken(result2.userName, result2.password, result2.id));
-                    default: break;
+                    default:
+                        break;
                 }
                 Console.WriteLine(result);
                 if (result != -1)
@@ -449,15 +446,8 @@ namespace sssMoonlet {
                 {
                 }
                 return JsonSerializer.Serialize(result2);
-
-
-
-
-
-
-
             }
-            catch (MySqlException ex)
+            catch (Exception ex)
             {
                 Console.WriteLine("Catch");
                 Console.WriteLine(ex.Message);
@@ -486,19 +476,17 @@ namespace sssMoonlet {
                 // t.Resume();
                 //结束线程 已弃用
                 /// t.Abort();
-
                 // Task开启线程
                 Task task = new Task(DownLoadFile);
                 task.Start();
                 // 通过线程池开启线程
                 ThreadPool.QueueUserWorkItem(new WaitCallback(TestThreadPool), new string[] { "test" });
-
                 //Console.ReadKey();
                 // conn.Close();
             }
-
-            return $"{data:'接收数据完成'}";
+            response.StatusDescription = "500";//获取或设置返回给客户端的 HTTP 状态代码的文本说明。
+            response.StatusCode = 500;// 获取或设置返回给客户端的 HTTP 状态代码。
+            return "500";
         }
-
     }
 }

@@ -6,13 +6,15 @@ using System.Threading.Tasks;
 
 namespace sssMoonlet
 {
-    public class Test
+    public class Test3
     {
-        public  void Test2() {
+        public static void Test222()
+        {
             Console.WriteLine("test");
         }
-        public Test() {
+        public Test3()
+        {
             Console.WriteLine("2222");
         }
-}
+    }
 }
