@@ -357,8 +357,6 @@ namespace sssMoonlet
                         break;
                     case "/login":
                         // 删除
-                        throw new NullReferenceException("3333333333333333");
-
                         sql = $"select * from user where userName = '{newData.userName}'and password = '{newData.password}';";
                         Console.WriteLine(sql);
                         break;
@@ -432,7 +430,21 @@ namespace sssMoonlet
                             result2.password = reader.GetString("password");
                             result2.text = "操作成功";
                         }
-                        return JsonSerializer.Serialize(getToken(result2.userName, result2.password, result2.id));
+                        returnBaseModel returnData = new returnBaseModel();
+                        returnData.setCode(200);
+                        returnData.setMessage("操作成功");
+                        // Dictionary<string, string> dict = new Dictionary<string, string>() { { "token", getToken(result2.userName, result2.password, result2.id) } };
+                        Data data2 = new Data();
+                        var a = new
+                        {
+                            message = "登录成功",
+                            code = "200",
+                            data = new
+                            {
+                                token = getToken(result2.userName, result2.password, result2.id)
+                            }
+                        };
+                        return JsonSerializer.Serialize(a);
                     default:
                         break;
                 }
