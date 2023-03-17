@@ -21,7 +21,7 @@ namespace sssMoonlet
     }
 
 
-    partial class index
+    partial class Index
     {
         static HttpListener httpObj = new HttpListener();
         static void Main(string[] args)
@@ -29,7 +29,6 @@ namespace sssMoonlet
 
             try
             {
-
                 AppDomain currentDomain = AppDomain.CurrentDomain;
                 currentDomain.UnhandledException += new UnhandledExceptionEventHandler(MyHandler);
                 getToken("admin", "admin", 1);
@@ -43,28 +42,23 @@ namespace sssMoonlet
                 httpObj.BeginGetContext(Result, null);
                 Console.WriteLine($"服务端初始化完毕，正在等待客户端请求,时间：{DateTime.Now.ToString()}\r\n");
                 Console.ReadKey();
-
             }
             catch (Exception e)
             {   // 只能捕获主线程同步代码
                 Console.WriteLine("Catch clause caught : {0} \n", e.Message);
-
             }
             finally
             {
                 Console.WriteLine("finally");
                 Console.ReadKey();
             }
-
         }
-
         static void MyHandler(object sender, UnhandledExceptionEventArgs args)
         {
             Exception e = (Exception)args.ExceptionObject;
             Console.WriteLine("MyHandler caught : " + e.Message);
             Console.WriteLine("Runtime terminating: {0}", args.IsTerminating);
         }
-
         private static void Result(IAsyncResult ar)
         {
             //当接收到请求后程序流会走到这里
@@ -123,17 +117,14 @@ namespace sssMoonlet
         // 定时器
         private static void test(object source, ElapsedEventArgs e)
         {
-
             Console.WriteLine("OK, test event is fired at: " + DateTime.Now.ToString());
 
         }
         // 定时任务
         private static void test2(object source, ElapsedEventArgs e)
         {
-
             if (DateTime.Now.Hour == 14 && DateTime.Now.Minute == 14)  //如果当前时间是10点30分
                 Console.WriteLine("OK, event fired at: " + DateTime.Now.ToString());
-
         }
         // 多线程1
         private static void DownLoadFile()
@@ -161,11 +152,9 @@ namespace sssMoonlet
                 //Create a new instance of RSACryptoServiceProvider.
                 using (RSACryptoServiceProvider RSA = new RSACryptoServiceProvider())
                 {
-
                     //Import the RSA Key information. This only needs
                     //toinclude the public key information.
                     RSA.ImportParameters(RSAKeyInfo);
-
                     //Encrypt the passed byte array and specify OAEP padding.  
                     //OAEP padding is only available on Microsoft Windows XP or
                     //later.  
@@ -178,7 +167,6 @@ namespace sssMoonlet
             catch (CryptographicException e)
             {
                 Console.WriteLine(e.Message);
-
                 return null;
             }
         }
@@ -213,7 +201,6 @@ namespace sssMoonlet
         public static string getToken(String userName, String password, Int32 id)
         {
             // 先根据用户名密码查询数据库中是否有这个用户
-
             //JWT载荷数据对象
             var payload = new Dictionary<string, object>
     {
@@ -238,7 +225,6 @@ namespace sssMoonlet
 };
             //私钥
             var secret = "C4CCD2D2656D820062C11968C09E9175";
-
             //HMACSHA256加密
             IJwtAlgorithm algorithm = new HMACSHA256Algorithm();
             //序列化和反序列
@@ -257,7 +243,6 @@ namespace sssMoonlet
         {
             //私钥
             var secret = "C4CCD2D2656D820062C11968C09E9175";
-
             //需要解密的JWT令牌
             try
             {
@@ -268,7 +253,6 @@ namespace sssMoonlet
                 IBase64UrlEncoder urlEncoder = new JwtBase64UrlEncoder();
                 IJwtDecoder decoder = new JwtDecoder(serializer, validator, urlEncoder, algorithm);
                 var json = decoder.Decode(token, secret, verify: true);
-
                 Console.WriteLine(json);
             }
             catch (TokenExpiredException)
@@ -279,7 +263,6 @@ namespace sssMoonlet
             {
                 Console.WriteLine("签名校验失败，数据可能被篡改！");
             }
-
         }
         // http
         private static string HandleRequest(HttpListenerRequest request, HttpListenerResponse response, string requestUrl)
@@ -302,8 +285,6 @@ namespace sssMoonlet
                         byteList.AddRange(byteArr);
                     } while (readLen != 0);
                     data = Encoding.UTF8.GetString(byteList.ToArray(), 0, len);
-
-
                     //获取得到数据data可以进行其他操作
                 }
                 catch (Exception ex)
@@ -319,18 +300,13 @@ namespace sssMoonlet
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine($"接收数据完成:{data.Trim()},时间：{DateTime.Now.ToString()}");
                 Console.WriteLine($"typeof:{data.Trim().GetType()},时间：{DateTime.Now.ToString()}");
-
                 var newData = data.Trim().Length != 0 ? JsonSerializer.Deserialize<User>(data) : null;
                 Console.WriteLine(newData);
-
-
                 String connectStr = "server=127.0.0.1;port=3306;user=root;password=123456; database=moonlet;";
                 MySqlConnection conn = new MySqlConnection(connectStr);
-
                 conn.Open();//打开通道，建立连接，可能出现异常，使用try catch语句
                 Console.WriteLine("已建立连接");
                 string sql = "";
-
                 switch (requestUrl)
                 {
                     case "/query":
@@ -383,9 +359,6 @@ namespace sssMoonlet
                             result2.password = reader.GetString("password");
                             result2.text = "操作成功";
                         }
-
-
-
                         return JsonSerializer.Serialize(result2);
                     case "/queryAll":
                         reader = cmd.ExecuteReader();
@@ -407,7 +380,6 @@ namespace sssMoonlet
                     case "/add":
                         // 新增
                         result = cmd.ExecuteNonQuery();//3.执行插入、删除、更改语句。执行成功返回受影响的数据的行数，返回1可做true判断。执行失败不返回任何数据，报错，下面代码都不执行
-
                         break;
                     case "/update":
                         // 更新
@@ -472,7 +444,6 @@ namespace sssMoonlet
                 timer.Start();
                 timer.Elapsed += new System.Timers.ElapsedEventHandler(test2);
                 // Thread类开启线程
-
                 Thread t = new Thread(() =>
                 {
                     Console.WriteLine("开始下载" + Thread.CurrentThread.ManagedThreadId);
